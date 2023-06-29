@@ -619,7 +619,7 @@ bw = []
 for file in args.INPUT_ARCHIVE:
     minchan.append(minchan_from_name(file))
     if os.path.isfile(file):  # Checking file existence
-        print(("\nOppen the observation {:s}.\n".format(file)))
+        print(("\nOpen the observation {:s}.\n".format(file)))
         print_headObs_from_file(file)
     else:
         print(("\n{:s} is not a file.\n".format(file)))
