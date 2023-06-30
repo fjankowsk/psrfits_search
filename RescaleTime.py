@@ -6,7 +6,7 @@
 # MODULES
 
 import numpy as np
-import pyfits as fi
+import astropy.io.fits as fi
 import sys
 import argparse as arg
 import os
