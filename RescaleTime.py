@@ -116,10 +116,10 @@ if (
 
 colList = []  # Field list for the new fits file
 
-# Column of the time lapse of each block
+# Column of the time lapse of each block (time per block)
 oldArray = data.field(0)  # Copy of the old data array
 oldCol = data.columns[0].copy()  # Copy of the old corresponding header
-newArray = np.reshape(
+newArray = np.resize(
     oldArray / args.n, (newBlocks,)
 )  # Computing of the new values and resizing of the data array
 newCol = fi.Column(
@@ -150,7 +150,7 @@ colList.append(newCol)  # Adding to the new field list
 for f in range(3, 12):  # Loop on other 1D subint arrays
     oldArray = data.field(f)  # Copy of the old data array
     oldCol = data.columns[f].copy()  # Copy of the old corresponding header
-    newArray = np.reshape(oldArray, (newBlocks,))  # Resizing of the data array
+    newArray = np.resize(oldArray, (newBlocks,))  # Resizing of the data array
     newCol = fi.Column(
         name=oldCol.name,
         format=oldCol.format,
@@ -163,7 +163,7 @@ for f in range(3, 12):  # Loop on other 1D subint arrays
 for f in range(12, 14):  # Loop on 2D weight arrays
     oldArray = data.field(f)  # Copy of the old data array
     oldCol = data.columns[f].copy()  # Copy of the old corresponding headoer
-    newArray = np.reshape(oldArray, (newBlocks, chan))  # Resizing of the data array
+    newArray = np.resize(oldArray, (newBlocks, chan))  # Resizing of the data array
     newCol = fi.Column(
         name=oldCol.name,
         format=oldCol.format,
@@ -176,7 +176,7 @@ for f in range(12, 14):  # Loop on 2D weight arrays
 for f in range(14, 16):  # Loop on 2D weight arrays
     oldArray = data.field(f)  # Copy of the old data array
     oldCol = data.columns[f].copy()  # Copy of the old corresponding header
-    newArray = np.reshape(
+    newArray = np.resize(
         oldArray, (newBlocks, chan * pol)
     )  # Resizing of the data array
     newCol = fi.Column(
