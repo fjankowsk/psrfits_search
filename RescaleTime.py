@@ -69,6 +69,9 @@ bits = head["NBITS"]  # Number of bits by datum
 tsample = head["TBIN"]  # Time lapse of a sample
 lst = headObs["STT_LST"]
 
+print("Old samples: {0}".format(samples))
+print("Old blocks: {0}".format(blocks))
+print("Old time per block: {0}".format(tsample))
 
 # COMPUTING OF THE NEW INFORMATION
 
@@ -80,6 +83,10 @@ newSize = int(
 newTblock = float(tsample * newSamples)  # Computing of the new block time lapse
 newLst = round(lst - tsample * samples / 2.0 + newTblock / 2.0, 0)
 
+print("New samples: {0}".format(newSamples))
+print("New blocks: {0}".format(newBlocks))
+print("New size: {0}".format(newSize))
+print("New time per block: {0}".format(newTblock))
 
 # WRITING MODIFIED LINES IN HEADERS
 
