@@ -91,18 +91,14 @@ print("New time per block: {0}".format(newTblock))
 
 # WRITING MODIFIED LINES IN HEADERS
 
-head["NAXIS1"] = newSize  # Writing of the new data array size
-head["NAXIS2"] = newBlocks  # Writing of the new number of rows in the data fits
-head["TFORM17"] = (
-    str(newSize) + "E"
-)  # Writing of the new amplitude data array byte size
-head[
-    "NSBLK"
-] = newSamples  # Writing of the number of samples per block in the new fits file
+head["NAXIS1"] = newSize  # new data array size (block size)
+head["NAXIS2"] = newBlocks  # new number of rows in the data fits
+head["TFORM17"] = str(newSize) + "E"  # new amplitude data array byte size
+head["NSBLK"] = newSamples  # number of samples per block in the new fits file
 head["TDIM17"] = (
     "(" + str(bin) + "," + str(chan) + "," + str(pol) + "," + str(newSamples) + ")"
-)  # Writing of the new amplitude data array dimension
-headObs["STT_LST"] = newLst  # Writing the new LST of the first block center
+)  # new amplitude data array dimension
+headObs["STT_LST"] = newLst  # new LST of the first block center
 
 if (
     newSize < bits
