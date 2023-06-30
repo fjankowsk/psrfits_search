@@ -50,7 +50,7 @@ print("Resized arrays writed in {:s}.\n".format(args.newFileName))
 
 # DATA EXTRACTION OF THE PREVIOUS FITS
 
-hdul = fi.open(args.filename, mode="readonly")
+hdul = fi.open(args.fileName, mode="readonly")
 
 headObs = hdul[0].header
 head = hdul[1].header
