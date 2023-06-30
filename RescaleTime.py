@@ -18,9 +18,7 @@ parser = arg.ArgumentParser(
     description="Resize the FITS file to decrease the time lapse of a row."
 )
 
-parser.add_argument(
-    "-f", dest="fileName", type=str, help="Name of the FITS file to change."
-)
+parser.add_argument("fileName", type=str, help="Name of the FITS file to adjust.")
 parser.add_argument(
     "-n",
     dest="n",
