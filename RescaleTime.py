@@ -24,11 +24,15 @@ parser.add_argument(
 parser.add_argument(
     "-n",
     dest="n",
-    type=int,
-    help="Dividing factor on samples per block. Equivalent as multiplying factor for the number of row. Must be a power of 2.",
+    type=float,
+    help="Dividing factor on samples per block. Equivalent as multiplying factor for the number of row.",
 )
 parser.add_argument(
-    "-o", dest="newFileName", type=str, help="Name of the new FITS file to write."
+    "-o",
+    dest="newFileName",
+    type=str,
+    required=True,
+    help="Name of the new FITS file to write.",
 )
 
 args = parser.parse_args()
@@ -42,19 +46,7 @@ else:
     print("\n{:s} is not a file.\n".format(args.fileName))
     sys.exit()
 
-if args.n % 2 != 0:  # Check if n is a power of 2
-    print("n is not a power of 2.\n")
-    sys.exit()
-
-
-if args.newFileName:  # Define the name of the new FITS file
-    print("Resized arrays writed in {:s}.\n".format(args.newFileName))
-else:
-    print(
-        "None new FITS file name defined. Default name used : new_{:s}.\n".format(
-            args.fileName
-        )
-    )
+print("Resized arrays writed in {:s}.\n".format(args.newFileName))
 
 
 # DATA EXTRACTION OF THE PREVIOUS FITS
