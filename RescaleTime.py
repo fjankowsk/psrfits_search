@@ -23,6 +23,7 @@ parser.add_argument(
     "-n",
     dest="n",
     type=float,
+    required=True,
     help="Dividing factor on samples per block. Equivalent as multiplying factor for the number of row.",
 )
 parser.add_argument(
