@@ -71,7 +71,8 @@ lst = headObs["STT_LST"]
 
 print("Old samples: {0}".format(samples))
 print("Old blocks: {0}".format(blocks))
-print("Old time per block: {0}".format(tsample))
+print("Old size: {0}".format(bin * chan * pol * samples))
+print("Old time per block: {0}".format(tsample * samples))
 
 # COMPUTING OF THE NEW INFORMATION
 
