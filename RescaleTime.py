@@ -171,9 +171,9 @@ for f in range(12, 14):  # Loop on 2D weight arrays
 
 for f in range(14, 16):  # Loop on 2D weight arrays
     oldArray = data.field(f)  # Copy of the old data array
-    oldCol = data.columns[f].copy()  # Copy of the old corresponding headoer
-    newArray = np.tile(oldArray, args.n).reshape(
-        (newBlocks, chan * pol)
+    oldCol = data.columns[f].copy()  # Copy of the old corresponding header
+    newArray = np.resize(
+        oldArray, (newBlocks, chan * pol)
     )  # Resizing of the data array
     newCol = fi.Column(
         name=oldCol.name,
