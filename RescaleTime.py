@@ -50,15 +50,11 @@ print("Resized arrays writed in {:s}.\n".format(args.newFileName))
 
 # DATA EXTRACTION OF THE PREVIOUS FITS
 
-headObs = fi.getheader(
-    args.fileName, 0, do_not_scale_image_data=True, scale_back=True
-)  # Extraction of the observation header
-head = fi.getheader(
-    args.fileName, 1, do_not_scale_image_data=True, scale_back=True
-)  # Extraction of the data header
-data = fi.getdata(
-    args.fileName, do_not_scale_image_data=True, scale_back=True
-)  # Extraction of the data arrays
+hdul = fi.open(args.filename, mode="readonly")
+
+headObs = hdul[0].header
+head = hdul[1].header
+data = hdul[1].data
 
 chan = head["NCHAN"]  # Number of frequency channel
 samples = head["NSBLK"]  # Number of samples per block
@@ -113,85 +109,52 @@ if (
 
 
 # RESIZING ARRAYS
+cols = hdul[1].columns
+print(cols)
+print(cols.names)
 
-colList = []  # Field list for the new fits file
-
-# Column of the time lapse of each block (time per block)
-oldArray = data.field(0)  # Copy of the old data array
-oldCol = data.columns[0].copy()  # Copy of the old corresponding header
+# tsubint (time per block)
 newArray = np.resize(
-    oldArray / args.n, (newBlocks,)
+    data["tsubint"] / args.n, (newBlocks,)
 )  # Computing of the new values and resizing of the data array
 print(newArray.shape)
-newCol = fi.Column(
-    name=oldCol.name, format=oldCol.format, unit=oldCol.unit, array=newArray
-)  # Creation of the new field
-colList.append(newCol)  # Adding to the new field list
+data["tsubint"] = newArray
 
-# Column of the time offset of the center of each block
-oldCol = data.columns[1].copy()  # Copy of the old corresponding header
+# offs_sub
 newArray = np.arange(
     newTblock / 2.0, tsample * samples * blocks, newTblock
 )  # Creation of the new block offset 1D array
-newCol = fi.Column(
-    name=oldCol.name, format=oldCol.format, unit=oldCol.unit, array=newArray
-)  # Creation of the new field
-colList.append(newCol)  # Adding to the new field list
+print(newArray.shape)
+data["offs_sub"] = newArray
 
-# Column of the LST time of the center of each block
-oldCol = data.columns[2].copy()  # Copy of the old corresponding header
+# lst_sub
 newArray = np.around(
     np.linspace(newLst, newLst + newBlocks * newTblock, newBlocks), 0
 )  # Creation of the new LST time 1D array
-newCol = fi.Column(
-    name=oldCol.name, format=oldCol.format, unit=oldCol.unit, array=newArray
-)  # Creation of the new field
-colList.append(newCol)  # Adding to the new field list
+print(newArray.shape)
+data["lst_sub"] = newArray
 
 for f in range(3, 12):  # Loop on other 1D subint arrays
-    oldArray = data.field(f)  # Copy of the old data array
-    oldCol = data.columns[f].copy()  # Copy of the old corresponding header
-    newArray = np.resize(oldArray, (newBlocks,))  # Resizing of the data array
-    print(newArray.shape)
-    newCol = fi.Column(
-        name=oldCol.name,
-        format=oldCol.format,
-        unit=oldCol.unit,
-        dim=oldCol.dim,
-        array=newArray,
-    )  # Creation of the new field
-    colList.append(newCol)  # Adding to the new field list
+    field = cols.names[f]
+    newArray = np.resize(data[field], (newBlocks,))  # Resizing of the data array
+    print(field, newArray.shape)
+    data[field] = newArray
 
 for f in range(12, 14):  # Loop on 2D weight arrays
-    oldArray = data.field(f)  # Copy of the old data array
-    oldCol = data.columns[f].copy()  # Copy of the old corresponding headoer
-    newArray = np.resize(oldArray, (newBlocks, chan))  # Resizing of the data array
-    newCol = fi.Column(
-        name=oldCol.name,
-        format=oldCol.format,
-        unit=oldCol.unit,
-        dim=oldCol.dim,
-        array=newArray,
-    )  # Creation of the new field
-    colList.append(newCol)  # Adding to the new field list
+    field = cols.names[f]
+    newArray = np.resize(data[field], (newBlocks, chan))  # Resizing of the data array
+    print(field, newArray.shape)
+    data[field] = newArray
 
 for f in range(14, 16):  # Loop on 2D weight arrays
-    oldArray = data.field(f)  # Copy of the old data array
-    oldCol = data.columns[f].copy()  # Copy of the old corresponding header
+    field = cols.names[f]
     newArray = np.resize(
-        oldArray, (newBlocks, chan * pol)
+        data["field"], (newBlocks, chan * pol)
     )  # Resizing of the data array
-    newCol = fi.Column(
-        name=oldCol.name,
-        format=oldCol.format,
-        unit=oldCol.unit,
-        dim=oldCol.dim,
-        array=newArray,
-    )  # Creation of the new field
-    colList.append(newCol)  # Adding to the new field list
+    print(field, newArray.shape)
+    data[field] = newArray
 
-oldArray = data.field(16)  # Copy of the old amplitude data array
-oldCol = data.columns[16].copy()  # Copy of the old corresponding header
+# data
 newFormat = fi.column._ColumnFormat(
     str(newSize) + "E"
 )  # Definition of the new data array format
@@ -199,28 +162,15 @@ newDim = (
     "(" + str(bin) + "," + str(chan) + "," + str(pol) + "," + str(newSamples) + ")"
 )  # Definition of the new data array definition
 newArray = np.reshape(
-    oldArray, (newBlocks, newSamples, pol, chan, bin)
+    data["data"], (newBlocks, newSamples, pol, chan, bin)
 )  # Resizing of the data array
 print(newArray.shape)
-newCol = fi.Column(
-    name=oldCol.name, format=newFormat, unit=oldCol.unit, dim=newDim, array=newArray
-)  # Creation of the new field
-colList.append(newCol)  # Adding to the new field list
-
+data["data"] = newArray
+cols.change_attrib("data", "format", newFormat)
+cols.change_attrib("data", "dim", newDim)
 
 # DEFINITION OF THE NEW FITS
 
-colDefs = fi.ColDefs(colList)  # Creation of the new fields object
-tbhdu = fi.BinTableHDU.from_columns(
-    colDefs, header=head
-)  # Creation of the new data table object
-
-# Creation of the new observation header (exactly the same that the old fits file)
-prihdu = fi.PrimaryHDU(header=headObs)
-hdulist = fi.HDUList([prihdu, tbhdu])  # Creation of the new HDU object
-
 print(head)
-print(prihdu.header)
-print(tbhdu.header)
 
-hdulist.writeto(args.newFileName)
+hdul.writeto(args.newFileName)
