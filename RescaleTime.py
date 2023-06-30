@@ -122,6 +122,7 @@ oldCol = data.columns[0].copy()  # Copy of the old corresponding header
 newArray = np.resize(
     oldArray / args.n, (newBlocks,)
 )  # Computing of the new values and resizing of the data array
+print(newArray.shape)
 newCol = fi.Column(
     name=oldCol.name, format=oldCol.format, unit=oldCol.unit, array=newArray
 )  # Creation of the new field
@@ -151,6 +152,7 @@ for f in range(3, 12):  # Loop on other 1D subint arrays
     oldArray = data.field(f)  # Copy of the old data array
     oldCol = data.columns[f].copy()  # Copy of the old corresponding header
     newArray = np.resize(oldArray, (newBlocks,))  # Resizing of the data array
+    print(newArray.shape)
     newCol = fi.Column(
         name=oldCol.name,
         format=oldCol.format,
@@ -199,6 +201,7 @@ newDim = (
 newArray = np.reshape(
     oldArray, (newBlocks, newSamples, pol, chan, bin)
 )  # Resizing of the data array
+print(newArray.shape)
 newCol = fi.Column(
     name=oldCol.name, format=newFormat, unit=oldCol.unit, dim=newDim, array=newArray
 )  # Creation of the new field
@@ -216,6 +219,10 @@ prihdu = fi.PrimaryHDU(
     header=headObs
 )  # Creation of the new observation header (exactly the same that the old fits file)
 hdulist = fi.HDUList([prihdu, tbhdu])  # Creation of the new HDU object
+
+print(head)
+print(prihdu)
+print(tbhdu)
 
 hdulist.writeto(
     args.newFileName, output_verify="exception"
