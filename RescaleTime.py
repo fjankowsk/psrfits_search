@@ -215,16 +215,12 @@ tbhdu = fi.BinTableHDU.from_columns(
     colDefs, header=head
 )  # Creation of the new data table object
 
-prihdu = fi.PrimaryHDU(
-    header=headObs
-)  # Creation of the new observation header (exactly the same that the old fits file)
+# Creation of the new observation header (exactly the same that the old fits file)
+prihdu = fi.PrimaryHDU(header=headObs)
 hdulist = fi.HDUList([prihdu, tbhdu])  # Creation of the new HDU object
 
 print(head)
-print(prihdu)
-print(tbhdu)
+print(prihdu.header)
+print(tbhdu.header)
 
-hdulist.writeto(
-    args.newFileName, output_verify="exception"
-)  # Writing the new HDU object on the new fits file
-hdulist.close()
+hdulist.writeto(args.newFileName)
